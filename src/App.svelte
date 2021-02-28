@@ -1,12 +1,18 @@
 <script>
 	import Tailwindcss from './Tailwindcss.svelte';
 	import Button from './components/Button.svelte';
+	import WrongNetwork from './components/WrongNetwork.svelte';
 	import TeamMember from './components/TeamMember.svelte';
 	import ProgressRing from './components/ProgressRing.svelte';
     import { ethStore, chainId, web3, selectedAccount, connected } from 'svelte-web3';
+
+	let contractAddress= "0x4A43400245BD1F21C0ee6f6f333Bec91f206Bafe";
+
 	// Checks
 	let registerd = true;
 	let progress;
+	let wrongNetwork = false;
+	
 	// Loaders
 	let connectWalletLoading = false;
 
@@ -25,7 +31,7 @@
 
         // Updates any values that may have changed in the new block
         $web3.eth.subscribe('newBlockHeaders', async function(error, result) {
-			// DO SOMETHING
+			// DO SOMETHING ON EACH NEW BLOCK
 		})        
     }
 	enableBrowser();
@@ -40,8 +46,32 @@
 </svelte:head>
 
 <Tailwindcss />
-<main class="flex flex-col justify-center mt-11 md:mt-0 items-center h-full">
-	<h1 class="text-8xl font-bold leading-none">Honey</h1>
+{#if wrongNetwork}
+	<WrongNetwork />
+{/if}
+
+	<div class="flex justify-center md:justify-end">
+		{#if $connected}
+			<div class="flex cursor-pointer border-2 border-black m-6 px-3 py-1 rounded-lg space-x-2 font-medium">
+				<div class="hny pr-3 border-r-2 border-black">
+					162HNY
+				</div>
+				<div class="cth pr-3 border-r-2 border-black">
+					684CTH
+				</div>
+				<div class="addr">
+					<!-- Swap for user address -->
+					{ contractAddress.slice(0, 6) }...{ contractAddress.slice(contractAddress.length - 4, contractAddress.length) }
+				</div>
+			</div>
+		{/if}
+	</div>
+
+<main class="flex flex-col md:mt-16 justify-center items-center">
+	<div class="logo flex justify-center items-start">
+		<h1 class="text-8xl font-bold leading-none">Honey</h1>
+		<img class="w-12" src="./logo.svg" alt="logo">
+	</div>
 	<div class="mt-5">
 		{#if $connected}
 				{#if registerd}
