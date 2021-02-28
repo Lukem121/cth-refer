@@ -4,9 +4,11 @@
 	import WrongNetwork from './components/WrongNetwork.svelte';
 	import TeamMember from './components/TeamMember.svelte';
 	import ProgressRing from './components/ProgressRing.svelte';
+	import abi from './_honeyTokenABI.js';
     import { ethStore, chainId, web3, selectedAccount, connected } from 'svelte-web3';
 
-	let contractAddress= "0x4A43400245BD1F21C0ee6f6f333Bec91f206Bafe";
+	let honeyTokenABI = abi;
+	let honeyContractAddress= "0x4A43400245BD1F21C0ee6f6f333Bec91f206Bafe";
 
 	// Checks
 	let registerd = true;
@@ -35,6 +37,15 @@
 		})        
     }
 	enableBrowser();
+
+
+	const getSelectedAccountHoneyBalance = async(e) => {
+		let contract = new $web3.eth.Contract(honeyTokenABI, honeyContractAddress);
+		return contract.methods.balanceOf($selectedAccount).call().then(function(res) {
+			return res;
+		});
+	}
+
 </script>
 
 <svelte:head>
@@ -51,17 +62,28 @@
 {/if}
 
 	<div class="flex justify-center md:justify-end">
+		<a href="https://cheapswap.io/#/swap?inputCurrency=ETH&outputCurrency={honeyContractAddress}" class="flex cursor-pointer border-2 border-black my-6 mx-2 px-3 py-1 rounded-lg space-x-2 font-medium">
+			Get Honey!
+		</a>
 		{#if $connected}
-			<div class="flex cursor-pointer border-2 border-black m-6 px-3 py-1 rounded-lg space-x-2 font-medium">
-				<div class="hny pr-3 border-r-2 border-black">
-					162HNY
+			<div class="flex cursor-pointer border-2 border-black my-6 mr-6 px-3 py-1 rounded-lg space-x-2 font-medium">
+				<div class="hny pr-3 border-r-2 text-yellow-400 border-black">
+					{#await getSelectedAccountHoneyBalance() }
+						...
+					{:then balance}
+						<p>{parseInt($web3.utils.fromWei(balance))} HNY</p>
+					{/await}
 				</div>
-				<div class="cth pr-3 border-r-2 border-black">
-					684CTH
+				<div class="cth pr-3 border-r-2 text-red-600 border-black">
+					{#await $web3.eth.getBalance($selectedAccount)}
+						...
+					{:then balance}
+						<p>{parseInt($web3.utils.fromWei(balance))} CTH</p>
+					{/await}
 				</div>
 				<div class="addr">
 					<!-- Swap for user address -->
-					{ contractAddress.slice(0, 6) }...{ contractAddress.slice(contractAddress.length - 4, contractAddress.length) }
+					{ $selectedAccount.slice(0, 6) }...{ $selectedAccount.slice($selectedAccount.length - 4, $selectedAccount.length) }
 				</div>
 			</div>
 		{/if}
