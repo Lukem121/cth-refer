@@ -1,11 +1,23 @@
-pragma solidity ^0.5.1;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.1;
 
-import "./ERC223Token.sol";
-import "./ERC223Burnable.sol";
-import "./ERC223Mintable.sol";
+import "./ERC777/ERC777.sol";
 
-contract Honey is ERC223Token, ERC223Mintable, ERC223Burnable {
-    string public name = "Test Honey";
-    string public symbol = "TSTHNY";
-    uint public decimals = 18;
+/**
+ * @dev {ERC777} token, including:
+ *
+ *  - Preminted initial supply
+ *  - No access control mechanism (for minting/pausing) and hence no governance
+ *
+ * _Available since v3.4._
+ */
+contract Honey is ERC777 {
+    /**
+     * @dev Mints `initialSupply` amount of token and transfers them to `owner`.
+     *
+     * See {ERC777-constructor}.
+     */
+    constructor(string memory name, string memory symbol, address[] memory defaultOperators, uint256 initialSupply, address owner) ERC777(name, symbol, defaultOperators) {
+        _mint(owner, initialSupply, "", "");
+    }
 }
