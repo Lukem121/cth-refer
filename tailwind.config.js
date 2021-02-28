@@ -12,7 +12,12 @@ module.exports = {
   },
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      colors:{
+        'luke-green': "#50FA7B",
+        'luke-black': "#1A1A1D",
+      },
+    },
   },
   variants: {
     extend: {},
