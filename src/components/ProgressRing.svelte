@@ -29,7 +29,7 @@
         cx="{radius}"
         cy="{radius}"
     />
-    <text x="50%" y="54%" text-anchor="middle" fill="black">436.2</text>
+    <text x="50%" y="54%" text-anchor="middle" class="font-bold" fill="black">436.2</text>
 </svg>
 
 <style>
