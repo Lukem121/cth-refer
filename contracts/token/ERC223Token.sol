@@ -2,13 +2,14 @@ pragma solidity ^0.5.1;
 
 import "./IERC223.sol";
 import "./IERC223Recipient.sol";
+import "./ERC20CompatibleToken.sol";
 import "./SafeMath.sol";
 import "./Address.sol";
 
 /**
  * @title Reference implementation of the ERC223 standard token.
  */
-contract ERC223Token is IERC223 {
+contract ERC223Token is IERC223, ERC20CompatibleToken {
     using SafeMath for uint;
 
     /**
