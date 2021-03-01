@@ -2,3 +2,9 @@
 /public/build/
 
 .DS_Store
+
+node_modules
+
+#Hardhat files
+cache
+artifacts
