@@ -4,19 +4,26 @@
 	import WrongNetwork from './components/WrongNetwork.svelte';
 	import TeamMember from './components/TeamMember.svelte';
 	import ProgressRing from './components/ProgressRing.svelte';
+	import { slide } from 'svelte/transition';
 	import abi from './_honeyTokenABI.js';
     import { ethStore, chainId, web3, selectedAccount, connected } from 'svelte-web3';
 
 	let honeyTokenABI = abi;
-	let honeyContractAddress= "0x4A43400245BD1F21C0ee6f6f333Bec91f206Bafe";
+	let honeyContractAddress= "0x940395C99e6938BF02165461E86DEeaF3ADC6815";
+
+	// Register
+	let joinHoneyPrice = 0.01;
+	let registerUsername = "";
+	let registerReferalCode = "";
 
 	// Checks
-	let registerd = true;
+	let registerd = false;
 	let progress;
 	let wrongNetwork = false;
 	
 	// Loaders
 	let connectWalletLoading = false;
+	let registerLoading = false;
 
 	// Enables the connection to the MetaMask extention
     const enableBrowser = async () => {
@@ -39,6 +46,22 @@
 	enableBrowser();
 
 
+	// CONTRACT SENDS
+	const sendRegisterTransaction = async () => {
+		registerLoading = true;
+        let contract = new $web3.eth.Contract(abi, honeyContractAddress, { from: $selectedAccount });
+        await contract.methods.register(registerUsername, registerReferalCode).send({
+            from: $selectedAccount,
+            gasPrice: $web3.utils.toHex($web3.utils.toWei('1', 'gwei')),
+            value: $web3.utils.toWei((joinHoneyPrice).toString(), 'ether')
+        })
+        .then( (receipt) => {
+            console.log(receipt);
+        });
+		registerLoading = false;
+    }
+
+	// CONTRACT CALLS
 	const getSelectedAccountHoneyBalance = async(e) => {
 		let contract = new $web3.eth.Contract(honeyTokenABI, honeyContractAddress);
 		return contract.methods.balanceOf($selectedAccount).call().then(function(res) {
@@ -46,12 +69,14 @@
 		});
 	}
 
+
+
 </script>
 
 <svelte:head>
 	<style>
 		body {
-			height: 100vh;
+			height: 70vh;
 		}
 	</style>
 </svelte:head>
@@ -60,39 +85,45 @@
 {#if wrongNetwork}
 	<WrongNetwork />
 {/if}
-
-	<div class="flex justify-center md:justify-end">
-		<a href="https://cheapswap.io/#/swap?inputCurrency=ETH&outputCurrency={honeyContractAddress}" class="flex cursor-pointer border-2 border-black my-6 mx-2 px-3 py-1 rounded-lg space-x-2 font-medium">
-			Get Honey!
-		</a>
-		{#if $connected}
-			<div class="flex cursor-pointer border-2 border-black my-6 mr-6 px-3 py-1 rounded-lg space-x-2 font-medium">
-				<div class="hny pr-3 border-r-2 text-yellow-400 border-black">
-					{#await getSelectedAccountHoneyBalance() }
-						...
-					{:then balance}
-						<p>{parseInt($web3.utils.fromWei(balance))} HNY</p>
-					{/await}
-				</div>
-				<div class="cth pr-3 border-r-2 text-red-600 border-black">
-					{#await $web3.eth.getBalance($selectedAccount)}
-						...
-					{:then balance}
-						<p>{parseInt($web3.utils.fromWei(balance))} CTH</p>
-					{/await}
-				</div>
-				<div class="addr">
-					<!-- Swap for user address -->
-					{ $selectedAccount.slice(0, 6) }...{ $selectedAccount.slice($selectedAccount.length - 4, $selectedAccount.length) }
-				</div>
+<div class="flex justify-center items-center md:justify-end">
+	<a href="https://cheapswap.io/#/swap?inputCurrency=ETH&outputCurrency={honeyContractAddress}" >
+		<div class="flex justify-center items-center cursor-pointer border-2 border-black my-6 mr-1 md:mr-6 px-3 py-1 rounded-lg space-x-2 font-medium">
+			<p>Get Honey!</p>
+		</div>
+	</a>
+	{#if $connected}
+		<div class="flex justify-center items-center cursor-pointer border-2 border-black my-6 mr-0.5 md:mr-6 px-3 py-1 rounded-lg space-x-2 font-medium">
+			<div class="align-middle pr-3 border-r-2 text-yellow-400 text-sm border-black">
+				{#await getSelectedAccountHoneyBalance() }
+					...
+				{:then balance}
+					<p>{parseInt($web3.utils.fromWei(balance))} HNY</p>
+				{/await}
 			</div>
-		{/if}
-	</div>
+			<div class="cth pr-3 border-r-2 text-red-600 text-sm border-black">
+				{#await $web3.eth.getBalance($selectedAccount)}
+					...
+				{:then balance}
+					<p>{parseInt($web3.utils.fromWei(balance))} CTH</p>
+				{/await}
+			</div>
+			<div class="hidden md:block">
+				<p>{ $selectedAccount.slice(0, 6) }...{ $selectedAccount.slice($selectedAccount.length - 4, $selectedAccount.length) }</p>
+			</div>
+			<div class="sm:block md:hidden">
+				<p>{ $selectedAccount.slice(0, 6) }</p>
+			</div>
+		</div>
+	{/if}
+</div>
 
-<main class="flex flex-col md:mt-16 justify-center items-center">
-	<div class="logo flex justify-center items-start">
-		<h1 class="text-8xl font-bold leading-none">Honey</h1>
-		<img class="w-12" src="./logo.svg" alt="logo">
+<main class="flex flex-col md:mt-16 justify-center items-center h-full">
+	<!-- Logo -->
+	<div class="flex justify-center ">
+		<div class="pl-9 flex flex-nowrap items-start">
+			<h1 class="text-8xl font-bold leading-none">Honey</h1>
+			<img class="w-12" src="./logo.svg" alt="logo">
+		</div>
 	</div>
 	<div class="mt-5">
 		{#if $connected}
@@ -103,19 +134,38 @@
 						<Button on:click={enableBrowser} loading={connectWalletLoading}>Start Mining</Button>
 					</div>
 					{:else}
-					<form action="" class="flex flex-col justify-center items-center">
-						<div class="flex flex-col space-y-2 p-2 mb-3">
-							<input class="rounded border-2 w-56 shadow border-gray-400 px-4 py-1 font-bold text-lg" type="text" placeholder="Username">
-							<input class="rounded border-2 w-56 shadow border-gray-400 px-4 py-1 font-bold text-lg" type="text" placeholder="Referal Code">
+					<form on:submit|preventDefault={sendRegisterTransaction} class="flex flex-col justify-center items-center">
+						<div class="flex flex-col space-y-2 p-2 mb-1">
+							{#if registerReferalCode.length >= 3 }
+								<input transition:slide bind:value={registerUsername} required minLength="3" maxLength="18" class="rounded border w-56 shadow border-black px-4 py-1 text-lg" type="text" placeholder="Username">
+							{/if}
+							<input bind:value={registerReferalCode} required minLength="3" maxLength="18" class="rounded border w-56 shadow border-black px-4 py-1 text-lg" type="text" placeholder="Referral Code">
 						</div>
-						<Button on:click={enableBrowser} loading={connectWalletLoading}>Register</Button>
+						<Button on:click loading={registerLoading}>Register</Button>
 					</form>
 				{/if}
 			{:else}
 			<Button on:click={enableBrowser} loading={connectWalletLoading}>Connect Wallet</Button>
 		{/if}
 	</div>
-	<h2 class="mt-6 font-bold text-xl">Team</h2>
+	{#if registerd}
+	<div class="border-2 w-72 md:w-auto border-black mt-6 p-3 rounded space-y-1 md:space-y-1">
+		<h2 class="font-bold">Deposit CTH/HNY LP for reward multiplier</h2>
+		<div class="flex space-x-4">
+			<p class="text-green-400" >Staked: 3.8</p>
+			<p class="text-red-400">Unstaked: 8.1</p>
+		</div>
+		<div class="flex flex-col items-center md:flex-row space-y-1 md:space-x-4">
+			<Button on:click={enableBrowser} loading={connectWalletLoading}>Deposit</Button>
+			<Button on:click={enableBrowser} loading={connectWalletLoading}>Withdraw</Button>
+		</div>
+		<div class="flex justify-center">
+			<a href="https://cheapswap.io/#/add/ETH/{honeyContractAddress}">
+				<Button>Provide Liquididty</Button>
+			</a>
+		</div>
+	</div>
+	<h2 class="mt-6 font-bold text-xl leading-none">Team</h2>
 	<h2 class="text-xs">1 x 25% x (0.4 HNY/hr) = 0.10 HNY/hr</h2>
 	<div class="team mt-3 grid grid-cols-2 gap-7 sm:gap-5 sm:grid-cols-3">
 		<TeamMember />
@@ -130,6 +180,7 @@
 		<TeamMember />
 	</div>
 	<input bind:value={progress} type="range" min="0" max="100">
+	{/if}
 </main>
 
 <style>
