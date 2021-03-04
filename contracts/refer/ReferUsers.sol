@@ -4,7 +4,7 @@ pragma solidity ^0.8.1;
 
 import './SafeMath.sol';
 import './Ownable.sol';
-import './IERC223.sol';
+import './IERC777.sol';
 import './IERC20.sol';
 
 contract ReferUsers is Ownable {
@@ -136,7 +136,7 @@ contract ReferUsers is Ownable {
         uint256 tokenReward = baseReward + tokenBonus;
         
         // Payout tokens
-        IERC223(baseTokenContract).transfer(msg.sender, tokenReward);
+        IERC777(baseTokenContract).send(msg.sender, tokenReward, "");
     }
     
     function getTokenBonus(uint256 userStake, uint256 numberOfReferrals, uint256 teamStake) public view returns(uint256) {
