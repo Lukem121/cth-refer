@@ -9,7 +9,6 @@
     let sdo = 0;
 
     const strokeDashoffset = () => {
-        console.log(progress);
         sdo = circumference - progress / 100 * circumference;
     }
 

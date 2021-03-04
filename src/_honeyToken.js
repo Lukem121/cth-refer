@@ -1,4 +1,5 @@
-let abi = [
+export let address = "0x940395C99e6938BF02165461E86DEeaF3ADC6815";
+export let abi = [
 	{
 		"anonymous": false,
 		"inputs": [
@@ -324,5 +325,3 @@ let abi = [
 		"type": "function"
 	}
 ];
-
-export default abi;
