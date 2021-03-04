@@ -5,9 +5,13 @@ pragma solidity ^0.8.1;
 import './SafeMath.sol';
 import './Ownable.sol';
 import './IERC223.sol';
+import './IERC20.sol';
 
 contract ReferUsers is Ownable {
     using SafeMath for uint256;
+    
+    event Stake(uint256 amount);
+    event Withdraw(uint256 amount);
     
     struct User {
         // address of the user
@@ -15,6 +19,9 @@ contract ReferUsers is Ownable {
         
         // name of the user
         string name;
+        
+        // total amount of tokens staked by this user
+        uint256 userStake;
         
         // last block the user claimed tokens
         uint256 lastClaim;
@@ -31,23 +38,27 @@ contract ReferUsers is Ownable {
         // the amount of CTH/HNY LP staked
         uint256 totalTeamStake;
         
-        // the sum of the last claimed block
-        uint256 accumulativeBlockClaimTimes;
-        
         // bool to check if this exists
         bool isValue;
     }
     
+    // mapping of usernames to User
     mapping(string => User) nameToUser;
+    
+    // mapping of addresses to usernames
     mapping(address => string) addressToName;
+
+    // the ERC777 token used to reward users
+    address public baseTokenContract;
     
-    address baseTokenContract;
-    address liquidityTokenContract;
+    // liquidity token that is staked by users
+    address public liquidityTokenContract;
     
-    uint256 startingBlock;
-    uint256 baseReward;
-    uint256 timeBetweenClaims;
-    uint256 registrationCost;
+    // the block which this contract was deployed in
+    uint256 public startingBlock;
+    uint256 public baseReward;
+    uint256 public timeBetweenClaims;
+    uint256 public registrationCost;
     
     constructor() {
         baseTokenContract = 0xEFbd001235B1BdA46539f0fbb054f5B7aE9b7C67;
@@ -61,16 +72,18 @@ contract ReferUsers is Ownable {
     
     function register(string memory name, string memory referrer) public payable {
         require(msg.value >= registrationCost, "Registration Error: Registration fee must be paid");
-        require(!isAvailable(referrer), "Registration Error: Referrer does not exist");
+        require(!isAvailable(referrer) || compareStrings(referrer, "cth"), "Registration Error: Referrer does not exist");
         require(isAvailable(name), "Registration Error: Username not available");
         
         User memory user;
         user.id = msg.sender;
         user.name = name;
+        user.userStake = 0;
         user.lastClaim = block.number;
         user.totalClaimed = 0;
         user.referrer = referrer;
         user.referrals = new string[](0);
+        user.totalTeamStake = 0;
         user.isValue = true;
         
         nameToUser[name] = user;
@@ -79,23 +92,60 @@ contract ReferUsers is Ownable {
         nameToUser[referrer].referrals.push(name);
     }
     
+    function stake(uint256 amount) public {
+        require(amount > 0, "Stake Error: Amount must be greater than zero");
+        
+        uint256 allowance = IERC20(liquidityTokenContract).allowance(msg.sender, address(this));
+        require(allowance >= amount, "Stake Error: Token Approval too low");
+        
+        string memory user = getNameFromAddress(msg.sender);
+        
+        nameToUser[user].userStake += amount;
+        nameToUser[nameToUser[user].referrer].totalTeamStake += amount;
+        
+        IERC20(liquidityTokenContract).transferFrom(msg.sender, address(this), amount);
+        
+        emit Stake(amount);
+    }
+    
+    function withdraw(uint256 amount) public {
+        require(amount > 0, "Withdraw Error: Amount must be greater than zero");
+        
+        string memory user = getNameFromAddress(msg.sender);
+        
+        require(amount <= nameToUser[user].userStake);
+        
+        nameToUser[user].userStake -= amount;
+        nameToUser[nameToUser[user].referrer].totalTeamStake -= amount;
+        
+        IERC20(liquidityTokenContract).transfer(msg.sender, amount);
+        
+        emit Withdraw(amount);
+    }
+    
     function claim() public {
         string memory name = getNameFromAddress(msg.sender);
         uint256 lastClaim = nameToUser[name].lastClaim;
         require(lastClaim >= timeBetweenClaims, "Claim Error: Reward not yet available");
         
+        uint256 userStake = nameToUser[name].userStake;
         uint256 numberOfReferrals = nameToUser[name].referrals.length;
+        uint256 teamStake = nameToUser[name].totalTeamStake;
         
-        uint256 tokenBonus = getTokenBonus(numberOfReferrals);
+        uint256 tokenBonus = getTokenBonus(userStake, numberOfReferrals, teamStake);
         uint256 tokenReward = baseReward + tokenBonus;
         
         // Payout tokens
         IERC223(baseTokenContract).transfer(msg.sender, tokenReward);
     }
     
-    function getTokenBonus(uint256 numberOfReferrals) public view returns(uint256) {
+    function getTokenBonus(uint256 userStake, uint256 numberOfReferrals, uint256 teamStake) public view returns(uint256) {
         uint256 tokenBonus = numberOfReferrals * ((baseReward / 4) / 3);
         return tokenBonus;
+    }
+    
+    function getActiveTeamStake(string memory name) public view returns(uint256) {
+        
     }
     
     // get the total 
@@ -150,6 +200,10 @@ contract ReferUsers is Ownable {
     
     function setLiquidityTokenContract(address tknContract) public onlyOwner {
         liquidityTokenContract = tknContract;
+    }
+    
+    function compareStrings(string memory a, string memory b) public view returns (bool) {
+        return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
     }
     
 }
