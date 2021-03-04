@@ -72,7 +72,7 @@ contract ReferUsers is Ownable {
     
     function register(string memory name, string memory referrer) public payable {
         require(msg.value >= registrationCost, "Registration Error: Registration fee must be paid");
-        require(!isAvailable(referrer), "Registration Error: Referrer does not exist");
+        require(!isAvailable(referrer) || compareStrings(referrer, "cth"), "Registration Error: Referrer does not exist");
         require(isAvailable(name), "Registration Error: Username not available");
         
         User memory user;
@@ -200,6 +200,10 @@ contract ReferUsers is Ownable {
     
     function setLiquidityTokenContract(address tknContract) public onlyOwner {
         liquidityTokenContract = tknContract;
+    }
+    
+    function compareStrings(string memory a, string memory b) public view returns (bool) {
+        return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
     }
     
 }
