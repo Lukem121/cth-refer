@@ -4,7 +4,7 @@ pragma solidity ^0.8.1;
 
 import './SafeMath.sol';
 import './Ownable.sol';
-import './IERC777.sol';
+import './IERC223.sol';
 import './IERC20.sol';
 
 contract ReferUsers is Ownable {
@@ -72,7 +72,7 @@ contract ReferUsers is Ownable {
     
     function register(string memory name, string memory referrer) public payable {
         require(msg.value >= registrationCost, "Registration Error: Registration fee must be paid");
-        require(!isAvailable(referrer) || compareStrings(referrer, "cth"), "Registration Error: Referrer does not exist");
+        require(!isAvailable(referrer), "Registration Error: Referrer does not exist");
         require(isAvailable(name), "Registration Error: Username not available");
         
         User memory user;
@@ -136,7 +136,7 @@ contract ReferUsers is Ownable {
         uint256 tokenReward = baseReward + tokenBonus;
         
         // Payout tokens
-        IERC777(baseTokenContract).send(msg.sender, tokenReward, "");
+        IERC223(baseTokenContract).transfer(msg.sender, tokenReward);
     }
     
     function getTokenBonus(uint256 userStake, uint256 numberOfReferrals, uint256 teamStake) public view returns(uint256) {
@@ -191,6 +191,7 @@ contract ReferUsers is Ownable {
     
     // check if the username is available, registered usernames must be unique
     function isAvailable(string memory name) public view returns(bool) {
+        if(compareStrings(name, "cth")) return false;
         return !nameToUser[name].isValue;
     }
     
