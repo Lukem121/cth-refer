@@ -2,19 +2,31 @@
 	import Button from './Button.svelte';
 	import TeamMember from './TeamMember.svelte';
 	import ProgressRing from './ProgressRing.svelte';
-
-	import { address } from '../_honeyToken.js';
+    import { web3, selectedAccount } from 'svelte-web3';
+	import { abi, address } from '../_honeyToken.js';
 
 	export let progress;
+	let honeyBalance = 0;
 
     // Loaders
     let depostLoading = false;
     let withdrawLoading = false;
 
+    const getSelectedAccountHoneyBalance = async(e) => {
+		let contract = new $web3.eth.Contract(abi, address);
+		return contract.methods.balanceOf($selectedAccount).call().then(function(res) {
+			return res;
+		});
+	}
+
+    $web3.eth.subscribe('newBlockHeaders', async function(error, result) {
+        honeyBalance = await getSelectedAccountHoneyBalance();
+    })  
+
 </script>
 
 <div class="flex flex-col justify-center items-center">
-    <ProgressRing radius={100} progress={progress} stroke={8} />
+    <ProgressRing radius={100} honeyBalance={honeyBalance} progress={progress} stroke={8} />
     <h2 class="my-2 mb-3"><i class="far fa-clock"></i> 14:44:51</h2>
     <Button>Start Mining</Button>
 </div>
