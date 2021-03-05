@@ -136,7 +136,7 @@ contract ReferUsers is Ownable {
         uint256 tokenReward = baseReward + tokenBonus;
         
         // Payout tokens
-        IERC777(baseTokenContract).transfer(msg.sender, tokenReward);
+        IERC777(baseTokenContract).send(msg.sender, tokenReward, "");
     }
     
     function getTokenBonus(uint256 userStake, uint256 numberOfReferrals, uint256 teamStake) public view returns(uint256) {
