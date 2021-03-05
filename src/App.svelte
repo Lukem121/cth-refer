@@ -7,6 +7,8 @@
 	import Nav from './components/Nav.svelte';
 	import Register from './components/Register.svelte';
 	import Registered from './components/Registered.svelte';
+	import { abi, address } from './_referUser.js';
+
 
 
 	// Devtools
@@ -34,10 +36,26 @@
 
         // Updates any values that may have changed in the new block
         $web3.eth.subscribe('newBlockHeaders', async function(error, result) {
-			// DO SOMETHING ON EACH NEW BLOCK
+			if(!registerd){
+				registerd = await getIsRegistered($selectedAccount) !== "";
+			}
+			console.log(registerd);
 		})        
+		if($connected){
+			console.log(registerd);
+			registerd = await getIsRegistered($selectedAccount) !== "";
+		}
     }
 	enableBrowser();
+
+	// Check referral code exsists while typing
+    const getIsRegistered = async(val) => {
+		let contract = new $web3.eth.Contract(abi, address);
+		return contract.methods.getNameFromAddress(val).call().then(function(res) {
+			return res;
+		});
+	}
+
 </script>
 
 <svelte:head>

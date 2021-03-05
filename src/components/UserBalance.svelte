@@ -15,7 +15,12 @@
         {#await getSelectedAccountHoneyBalance() }
             ...
         {:then balance}
-            <p>{parseInt($web3.utils.fromWei(balance))} HNY</p>
+            {balance}
+            {#if $web3.utils.fromWei(balance) < 1}
+                <p>{parseFloat($web3.utils.fromWei(balance)).toFixed(3)} HNY</p>
+                {:else}
+                <p>{parseInt($web3.utils.fromWei(balance))} HNY</p>
+            {/if}
         {/await}
     </div>
     <div class="cth pr-3 border-r-2 text-red-600 text-sm border-black">

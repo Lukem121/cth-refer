@@ -1,6 +1,7 @@
 <script>
     export let radius = 0;
     export let progress = 62;
+    export let honeyBalance = 0;
     export let stroke = 0;
 
     const normalizedRadius = radius - stroke * 2;
@@ -28,7 +29,7 @@
         cx="{radius}"
         cy="{radius}"
     />
-    <text x="50%" y="54%" text-anchor="middle" class="font-bold" fill="black">436.2</text>
+    <text x="50%" y="54%" text-anchor="middle" class="font-bold" fill="black">{honeyBalance}</text>
 </svg>
 
 <style>
