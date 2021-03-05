@@ -2,7 +2,7 @@
 	import Button from './Button.svelte';
 	import { slide } from 'svelte/transition';
     import { ethStore, chainId, web3, selectedAccount, connected } from 'svelte-web3';
-	import { abi, address } from '../_honeyToken.js';
+	import { abi, address } from '../_referUser.js';
 
 
     // Register

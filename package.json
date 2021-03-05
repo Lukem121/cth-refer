@@ -28,6 +28,7 @@
     "tailwindcss": "^2.0.2"
   },
   "dependencies": {
+    "hardhat-abi-exporter": "^2.1.2",
     "sirv-cli": "^1.0.0",
     "svelte-web3": "^1.2.9"
   }
