@@ -16,7 +16,7 @@
 
     // Set if refural code exsists
     const setReferralCodeExsists = async () => {
-        referralCodeExsists = await getReferralCodeExsists();
+        referralCodeExsists = !(await getReferralCodeExsists());
     }
 
     // Check referral code exsists while typing
@@ -53,5 +53,5 @@
         {/if}
         <input bind:value={registerReferalCode} on:input={setReferralCodeExsists} required minLength="3" maxLength="18" class="rounded border w-56 shadow text-yellow-400 placeholder-yellow-300 border-black  px-4 py-1 text-lg" type="text" placeholder="Referral Code">
     </div>
-    <Button on:click loading={registerLoading}>Register</Button>
+    <Button on:click loading={registerLoading} >Register</Button>
 </form>
