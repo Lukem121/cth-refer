@@ -158,8 +158,23 @@ contract ReferUsers is Ownable {
     }
     //Luke fin here
     
-    function getReferralsFromName(string memory name, uint256 page, uint256 resultsPerPage) public view returns(uint256) {
+    function getAllReferralsFromName(){
         
+    }
+    
+    function getReferralsFromName(string memory name, uint256 cursor, uint256 resultsPerPage) public view returns(string[]) {
+        uint256 length = resultsPerPage;
+        
+        if (length > arr.length - cursor) {
+            length = arr.length - cursor;
+        }
+
+        values = new bytes32[](length);
+        for (uint256 i = 0; i < length; i++) {
+            values[i] = arr[cursor + i];
+        }
+
+        return (values, cursor + length);
     }
     
     function getTotalStakedFromName(string memory name) public view returns(uint256) {
