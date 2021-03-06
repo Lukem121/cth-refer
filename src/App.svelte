@@ -8,6 +8,9 @@
 	import Register from './components/Register.svelte';
 	import Registered from './components/Registered.svelte';
 	import { abi, address } from './_referUser.js';
+	import { abi as lpAbi, address as lpAddress } from './_liquidProvider.js';
+	import { abi as honeyAbi, address as honeyAddress } from './_honeyToken.js';
+	import { LPBalance, honeyBalance, registerd, approvedAmmount } from './dataStore.js';
 
 
 
@@ -15,7 +18,6 @@
 	let progress;
 
 	// Checks
-	let registerd = false;
 	let wrongNetwork = false;
 	
 	// Loaders
@@ -36,15 +38,11 @@
 
         // Updates any values that may have changed in the new block
         $web3.eth.subscribe('newBlockHeaders', async function(error, result) {
-			if(!registerd){
-				registerd = await getIsRegistered($selectedAccount) !== "";
+			if($connected){
+				updateStores();
 			}
-			console.log(registerd);
-		})        
-		if($connected){
-			console.log(registerd);
-			registerd = await getIsRegistered($selectedAccount) !== "";
-		}
+		})
+		updateStores();
     }
 	enableBrowser();
 
@@ -54,6 +52,38 @@
 		return contract.methods.getNameFromAddress(val).call().then(function(res) {
 			return res;
 		});
+	}
+	const getSelectedAccountHoneyBalance = async(e) => {
+		let contract = new $web3.eth.Contract(honeyAbi, honeyAddress);
+		return contract.methods.balanceOf($selectedAccount).call().then(function(res) {
+			return res;
+		});
+	}
+	const getSelectedAccountLPBalance = async(e) => {
+		let contract = new $web3.eth.Contract(lpAbi, lpAddress);
+		return contract.methods.balanceOf($selectedAccount).call().then(function(res) {
+			return res;
+		});
+	}
+	const getSelectedAccountApproval = async(e) => {
+		let contract = new $web3.eth.Contract(lpAbi, lpAddress);
+		return contract.methods.allowance($selectedAccount, address).call().then(function(res) {
+			return res;
+		});
+	}
+	const updateStores = async () => {
+		registerd.set(await getIsRegistered($selectedAccount) !== "");
+
+		let approvalAmount = await getSelectedAccountApproval();
+		approvedAmmount.set($web3.utils.fromWei(approvalAmount.toString()));
+
+		let hnybal = await getSelectedAccountHoneyBalance();
+		honeyBalance.set($web3.utils.fromWei(hnybal.toString()));
+
+		let lpbal = await getSelectedAccountLPBalance();
+		LPBalance.set($web3.utils.fromWei(lpbal.toString()));
+
+		console.log("STORES:", "Reg", $registerd, "hnyBal",$honeyBalance, "ApproveAmt",$approvedAmmount, "lpBal",$LPBalance)
 	}
 
 </script>
@@ -67,7 +97,7 @@
 </svelte:head>
 
 <Tailwindcss />
-<DEVTOOLS bind:registerd={registerd} bind:progress={progress} />
+<DEVTOOLS bind:registerd={$registerd} bind:progress={progress} />
 {#if wrongNetwork}
 	<WrongNetwork />
 {/if}
@@ -83,7 +113,7 @@
 	</div>
 	<div class="mt-5">
 		{#if $connected}
-				{#if registerd}
+				{#if $registerd}
 					<Registered bind:progress={progress} />
 					{:else}
 					<Register />

@@ -1,4 +1,4 @@
-export let address = "0x940395C99e6938BF02165461E86DEeaF3ADC6815";
+export let address = "0x53bFdC2bea273ef283769C0384DEf0C04D1Cea3f";
 export let abi = [
 	{
 		"anonymous": false,

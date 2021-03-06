@@ -24,6 +24,6 @@ module.exports = {
     clear: true,
     flat: true,
     only: [':ReferUsers'],
-  },
+  }
 };
 

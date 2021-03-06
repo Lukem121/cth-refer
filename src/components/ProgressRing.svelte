@@ -29,7 +29,11 @@
         cx="{radius}"
         cy="{radius}"
     />
-    <text x="50%" y="54%" text-anchor="middle" class="font-bold" fill="black">{honeyBalance}</text>
+    {#if honeyBalance < 1}
+        <text x="50%" y="54%" text-anchor="middle" class="font-bold" fill="black">{honeyBalance.toFixed(2)}</text>
+        {:else}
+        <text x="50%" y="54%" text-anchor="middle" class="font-bold" fill="black">{honeyBalance}</text>
+    {/if}
 </svg>
 
 <style>
