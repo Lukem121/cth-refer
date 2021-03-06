@@ -158,20 +158,26 @@ contract ReferUsers is Ownable {
     }
     //Luke fin here
     
-    function getAllReferralsFromName(){
-        
+    function getAllReferralsFromName(string memory name) public view returns(string[] memory) {
+        return nameToUser[name].referrals;
     }
     
-    function getReferralsFromName(string memory name, uint256 cursor, uint256 resultsPerPage) public view returns(string[]) {
+    function getAllReferralsFromAddress(address id) public view returns(string[] memory) {
+        string memory name = getNameFromAddress(id);
+        return getAllReferralsFromName(name);
+    }
+    
+    function getReferralsFromName(string memory name, uint256 cursor, uint256 resultsPerPage) public view returns(string[] memory values, uint256 newCursor) {
         uint256 length = resultsPerPage;
+        string[] memory referrals = getAllReferralsFromName(name);
         
-        if (length > arr.length - cursor) {
-            length = arr.length - cursor;
+        if (length > referrals.length - cursor) {
+            length = referrals.length - cursor;
         }
 
-        values = new bytes32[](length);
+        values = new string[](length);
         for (uint256 i = 0; i < length; i++) {
-            values[i] = arr[cursor + i];
+            values[i] = referrals[cursor + i];
         }
 
         return (values, cursor + length);
