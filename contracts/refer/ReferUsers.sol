@@ -66,7 +66,7 @@ contract ReferUsers is Ownable {
         
         startingBlock = block.number;
         baseReward = 50 ether;
-        timeBetweenClaims = 5760;
+        timeBetweenClaims = 10; // Was 5760
         registrationCost = 0.01 ether;
     }
     
@@ -150,13 +150,13 @@ contract ReferUsers is Ownable {
 
     // Luke added this!
     function getMiningProgressFromName(string memory name) public view returns(uint256) {
-        return block.number - nameToUser[name].lastClaim;
+        return (block.number - nameToUser[name].lastClaim) * (100 - 1) / (nameToUser[name].lastClaim + timeBetweenClaims - block.number) + 1;
     }
     function getMiningProgressFromAddress(address id) public view returns(uint256) {
         string memory name = getNameFromAddress(id);
         return getMiningProgressFromName(name);
     }
-    //L:uke fin her
+    //Luke fin here
     
     function getReferralsFromName(string memory name, uint256 page, uint256 resultsPerPage) public view returns(uint256) {
         

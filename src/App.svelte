@@ -10,7 +10,7 @@
 	import { abi, address } from './_referUser.js';
 	import { abi as lpAbi, address as lpAddress } from './_liquidProvider.js';
 	import { abi as honeyAbi, address as honeyAddress } from './_honeyToken.js';
-	import { progressRingValue, lastTimeMining, LPBalance, honeyBalance, registerd, approvedAmmount, stakedBalance } from './dataStore.js';
+	import { miningProgress, LPBalance, honeyBalance, registerd, approvedAmmount, stakedBalance } from './dataStore.js';
 
 
 
@@ -78,39 +78,42 @@
 			return res;
 		});
 	}
-	const getSelectedAccountLastClaimTime = async(e) => {
+	const getSelectedAccountMiningProgress = async(e) => {
 		let contract = new $web3.eth.Contract(abi, address);
-		return contract.methods.getLastClaimFromAddress($selectedAccount).call().then(function(res) {
+		return contract.methods.getMiningProgressFromAddress($selectedAccount).call().then(function(res) {
 			return res;
 		});
 	}
 	const updateStores = async () => {
 		registerd.set(await getIsRegistered($selectedAccount) !== "");
-
-		let approvalAmount = await getSelectedAccountApproval();
-		approvedAmmount.set($web3.utils.fromWei(approvalAmount.toString()));
-
+		
 		let hnybal = await getSelectedAccountHoneyBalance();
 		honeyBalance.set($web3.utils.fromWei(hnybal.toString()));
-
-		let totStake = await getSelectedAccountTotalStake();
-		stakedBalance.set($web3.utils.fromWei(totStake.toString()));
-
-		let ltMine = await getSelectedAccountLastClaimTime();
-		lastTimeMining.set($web3.utils.fromWei(ltMine.toString()));
 		
-		let lpbal = await getSelectedAccountLPBalance();
-		LPBalance.set($web3.utils.fromWei(lpbal.toString()));
+		if($registerd){
+			let approvalAmount = await getSelectedAccountApproval();
+			approvedAmmount.set($web3.utils.fromWei(approvalAmount.toString()));
 
-		progressRingValue.set(lastTimeMining);
-
+			if($approvedAmmount > 0){
+				
+				let totStake = await getSelectedAccountTotalStake();
+				stakedBalance.set($web3.utils.fromWei(totStake.toString()));
+				
+				let mineProgress = await getSelectedAccountMiningProgress();
+				miningProgress.set(mineProgress.toString());
+				
+				let lpbal = await getSelectedAccountLPBalance();
+				LPBalance.set($web3.utils.fromWei(lpbal.toString()));
+			}
+		}
+			
 		console.log("STORES:", 
 			"Reg", $registerd, 
 			"hnyBal",$honeyBalance, 
 			"ApproveAmt",$approvedAmmount, 
 			"lpBal",$LPBalance,
 			"totStake", $stakedBalance,
-			"lastClaim", $lastTimeMining
+			"mineProgress", $miningProgress
 		)
 	}
 

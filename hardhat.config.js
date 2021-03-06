@@ -23,7 +23,7 @@ module.exports = {
     path: './src/abi',
     clear: true,
     flat: true,
-    only: [':ReferUsers'],
+    only: [':ReferUsers', 'Honey'],
   }
 };
 

@@ -7,9 +7,7 @@
 	import { abi as lpAbi, address as lpAddress } from '../_liquidProvider.js';
 	import { abi as honeyAbi, address as honeyAddress } from '../_honeyToken.js';
 
-	import { stakedBalance, approvedAmmount, LPBalance, honeyBalance } from '../dataStore.js';
-
-	export let progress;
+	import { miningProgress, stakedBalance, approvedAmmount, LPBalance, honeyBalance } from '../dataStore.js';
 
     // Loaders
     let stakeLoading = false;
@@ -28,6 +26,7 @@
         .then( (receipt) => {
             console.log(receipt);
         });
+        
         claimLoading = false;
     }
 
@@ -76,7 +75,7 @@
 </script>
 
 <div class="flex flex-col justify-center items-center">
-    <ProgressRing radius={100} honeyBalance={$honeyBalance} progress={progress} stroke={8} />
+    <ProgressRing radius={100} honeyBalance={$honeyBalance} progress={$miningProgress} stroke={8} />
     <h2 class="my-2 mb-3"><i class="far fa-clock"></i> 14:44:51</h2>
     <Button on:click={sendSelectedAccountClaim} loading={claimLoading}>Start Mining</Button>
 </div>

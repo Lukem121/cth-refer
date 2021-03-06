@@ -6,7 +6,7 @@
 
 
     // Register
-	let joinHoneyPrice = 0.01;
+	let joinHoneyPrice = 0.0001;
 	let registerUsername = "";
 	let registerReferalCode = "";
     let referralUsernameExsists = false;
