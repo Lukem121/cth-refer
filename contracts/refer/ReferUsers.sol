@@ -4,7 +4,7 @@ pragma solidity ^0.8.1;
 
 import './SafeMath.sol';
 import './Ownable.sol';
-import './IERC777.sol';
+import './IERC223.sol';
 import './IERC20.sol';
 
 contract ReferUsers is Ownable {
@@ -61,8 +61,8 @@ contract ReferUsers is Ownable {
     uint256 public registrationCost;
     
     constructor() {
-        baseTokenContract = 0xEFbd001235B1BdA46539f0fbb054f5B7aE9b7C67;
-        liquidityTokenContract = 0xEFbd001235B1BdA46539f0fbb054f5B7aE9b7C67;
+        baseTokenContract = 0x940395C99e6938BF02165461E86DEeaF3ADC6815;
+        liquidityTokenContract = 0xf364f0fdB13F33cA1BEFd5f32e11B67ca91FC1cA;
         
         startingBlock = block.number;
         baseReward = 50 ether;
@@ -136,7 +136,7 @@ contract ReferUsers is Ownable {
         uint256 tokenReward = baseReward + tokenBonus;
         
         // Payout tokens
-        IERC777(baseTokenContract).send(msg.sender, tokenReward, "");
+        IERC223(baseTokenContract).transfer(msg.sender, tokenReward);
     }
     
     function getTokenBonus(uint256 userStake, uint256 numberOfReferrals, uint256 teamStake) public view returns(uint256) {
@@ -146,6 +146,19 @@ contract ReferUsers is Ownable {
     
     function getActiveTeamStake(string memory name) public view returns(uint256) {
         
+    }
+    
+    function getReferralsFromName(string memory name, uint256 page, uint256 resultsPerPage) public view returns(uint256) {
+        
+    }
+    
+    function getTotalStakedFromName(string memory name) public view returns(uint256) {
+        return nameToUser[name].userStake;
+    }
+    
+    function getTotalStakedFromAddress(address id) public view returns(uint256) {
+        string memory name = getNameFromAddress(id);
+        return getTotalStakedFromName(name); 
     }
     
     // get the total 
