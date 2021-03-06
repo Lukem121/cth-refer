@@ -7,7 +7,7 @@
 	import { abi as lpAbi, address as lpAddress } from '../_liquidProvider.js';
 	import { abi as honeyAbi, address as honeyAddress } from '../_honeyToken.js';
 
-	import { approvedAmmount, LPBalance, honeyBalance } from '../dataStore.js';
+	import { stakedBalance, approvedAmmount, LPBalance, honeyBalance } from '../dataStore.js';
 
 	export let progress;
 
@@ -15,6 +15,21 @@
     let stakeLoading = false;
     let withdrawLoading = false;
     let approvalLoading = false;
+    let claimLoading = false;
+
+    const sendSelectedAccountClaim = async () => {
+        claimLoading = true;
+
+        let contract = new $web3.eth.Contract(abi, address, { from: $selectedAccount });
+        await contract.methods.claim().send({
+            from: $selectedAccount,
+            gasPrice: $web3.utils.toHex($web3.utils.toWei('1', 'gwei')),
+        })
+        .then( (receipt) => {
+            console.log(receipt);
+        });
+        claimLoading = false;
+    }
 
     const sendSelectedAccountApproval = async () => {
         approvalLoading = true;
@@ -48,7 +63,7 @@
         withdrawLoading = true;
 
         let contract = new $web3.eth.Contract(abi, address, { from: $selectedAccount });
-        await contract.methods.withdraw($web3.utils.toWei($LPBalance)).send({
+        await contract.methods.withdraw($web3.utils.toWei($stakedBalance)).send({
             from: $selectedAccount,
             gasPrice: $web3.utils.toHex($web3.utils.toWei('1', 'gwei')),
         })
@@ -63,19 +78,19 @@
 <div class="flex flex-col justify-center items-center">
     <ProgressRing radius={100} honeyBalance={$honeyBalance} progress={progress} stroke={8} />
     <h2 class="my-2 mb-3"><i class="far fa-clock"></i> 14:44:51</h2>
-    <Button>Start Mining</Button>
+    <Button on:click={sendSelectedAccountClaim} loading={claimLoading}>Start Mining</Button>
 </div>
 
 <div class="border-2 w-72 md:w-auto border-black mt-6 p-3 rounded space-y-1 md:space-y-1">
     <h2 class="font-bold">Deposit CTH/HNY LP for reward multiplier</h2>
     <div class="flex space-x-4">
-        <p class="text-green-400" >Staked: 3.8</p>
-        <p class="text-red-400">Unstaked: {parseFloat($LPBalance).toFixed()}</p>
+        <p class="text-green-400" >Staked: {parseFloat($stakedBalance).toFixed(4)}</p>
+        <p class="text-red-400">Unstaked: {parseFloat($LPBalance).toFixed(4)}</p>
     </div>
     {#if $approvedAmmount > 0}
         <div class="flex flex-col items-center md:flex-row space-y-1 md:space-x-4">
-            <Button loading={stakeLoading} on:click={sendStakeRequest}>Stake</Button>
-            <Button loading={withdrawLoading} on:click={sendWithdrawStakeRequest}>Withdraw</Button>
+            <Button loading={stakeLoading} disabled={$LPBalance <= 0} on:click={sendStakeRequest}>Stake</Button>
+            <Button loading={withdrawLoading} disabled={$stakedBalance <= 0} on:click={sendWithdrawStakeRequest}>Withdraw</Button>
         </div>
         {:else}
         <div class="flex justify-center">

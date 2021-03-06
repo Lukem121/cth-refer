@@ -1,4 +1,4 @@
-export let address = "0x0545c4614FBF68637ea5E411752eeD51d39aC670";
+export let address = "0x5058e8145DdBB9211698a48ED4B51e0ca4a619c8";
 export let abi = [
 	{
 	  "inputs": [],
@@ -243,6 +243,35 @@ export let abi = [
 	{
 	  "inputs": [
 		{
+		  "internalType": "string",
+		  "name": "name",
+		  "type": "string"
+		},
+		{
+		  "internalType": "uint256",
+		  "name": "page",
+		  "type": "uint256"
+		},
+		{
+		  "internalType": "uint256",
+		  "name": "resultsPerPage",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "getReferralsFromName",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
 		  "internalType": "uint256",
 		  "name": "userStake",
 		  "type": "uint256"
@@ -297,6 +326,44 @@ export let abi = [
 		}
 	  ],
 	  "name": "getTotalClaimedFromName",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "id",
+		  "type": "address"
+		}
+	  ],
+	  "name": "getTotalStakedFromAddress",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "string",
+		  "name": "name",
+		  "type": "string"
+		}
+	  ],
+	  "name": "getTotalStakedFromName",
 	  "outputs": [
 		{
 		  "internalType": "uint256",
@@ -481,5 +548,4 @@ export let abi = [
 	  "stateMutability": "nonpayable",
 	  "type": "function"
 	}
-  ]
-  ;
+  ];

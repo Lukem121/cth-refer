@@ -147,6 +147,16 @@ contract ReferUsers is Ownable {
     function getActiveTeamStake(string memory name) public view returns(uint256) {
         
     }
+
+    // Luke added this!
+    function getMiningProgressFromName(string memory name) public view returns(uint256) {
+        return block.number - nameToUser[name].lastClaim;
+    }
+    function getMiningProgressFromAddress(address id) public view returns(uint256) {
+        string memory name = getNameFromAddress(id);
+        return getMiningProgressFromName(name);
+    }
+    //L:uke fin her
     
     function getReferralsFromName(string memory name, uint256 page, uint256 resultsPerPage) public view returns(uint256) {
         
