@@ -1,3 +1,3 @@
 test token: 0x53bFdC2bea273ef283769C0384DEf0C04D1Cea3f
 test referuser: 0x0545c4614FBF68637ea5E411752eeD51d39aC670
-test lpToken: 0xf364f0fdb13f33ca1befd5f32e11b67ca91fc1ca
+test lpToken: 0xf364f0fdB13F33cA1BEFd5f32e11B67ca91FC1cA
