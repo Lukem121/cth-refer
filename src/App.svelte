@@ -7,10 +7,11 @@
 	import Nav from './components/Nav.svelte';
 	import Register from './components/Register.svelte';
 	import Registered from './components/Registered.svelte';
+	import { SvelteToast } from '@zerodevx/svelte-toast'
 	import { abi, address } from './_referUser.js';
 	import { abi as lpAbi, address as lpAddress } from './_liquidProvider.js';
 	import { abi as honeyAbi, address as honeyAddress } from './_honeyToken.js';
-	import { accountName, miningProgress, LPBalance, honeyBalance, registerd, approvedAmmount, stakedBalance } from './dataStore.js';
+	import { lastClaimTime, timeBetweenClaim, currentBlockNumber, accountName, miningProgress, LPBalance, honeyBalance, registerd, approvedAmmount, stakedBalance } from './dataStore.js';
 
 
 
@@ -108,13 +109,21 @@
 			let acntName = await getNameFromAddress();
 			accountName.set(acntName.toString());
 
+			let { lastClaim , timeBetween, currentBlock } = await getSelectedAccountMiningProgress();
+
+			let output = ((currentBlock - lastClaim) * 100) / timeBetween;
+			if(output >= 100){
+				output = 100;
+			}
+			miningProgress.set(output);
+			lastClaimTime.set(lastClaim)
+			timeBetweenClaim.set(timeBetween)
+			currentBlockNumber.set(currentBlock)
+
 			if($approvedAmmount > 0){
 				
 				let totStake = await getSelectedAccountTotalStake();
 				stakedBalance.set($web3.utils.fromWei(totStake.toString()));
-				
-				let mineProgress = await getSelectedAccountMiningProgress();
-				miningProgress.set(mineProgress.toString());
 				
 			}
 		}
@@ -129,6 +138,10 @@
 		)
 	}
 
+	const options = {
+
+	}
+
 </script>
 
 <svelte:head>
@@ -138,7 +151,7 @@
 		}
 	</style>
 </svelte:head>
-
+<SvelteToast {options} />
 <Tailwindcss />
 <DEVTOOLS bind:registerd={$registerd} bind:progress={progress} />
 {#if wrongNetwork}

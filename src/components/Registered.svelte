@@ -1,5 +1,6 @@
 <script>
 	import Button from './Button.svelte';
+    import { toast } from '@zerodevx/svelte-toast'
 	import TeamMember from './TeamMember.svelte';
 	import ProgressRing from './ProgressRing.svelte';
     import { web3, selectedAccount } from 'svelte-web3';
@@ -7,7 +8,7 @@
 	import { abi as lpAbi, address as lpAddress } from '../_liquidProvider.js';
 	import { abi as honeyAbi, address as honeyAddress } from '../_honeyToken.js';
 
-	import { accountName, miningProgress, stakedBalance, approvedAmmount, LPBalance, honeyBalance } from '../dataStore.js';
+	import { lastClaimTime , timeBetweenClaim, currentBlockNumber, accountName, miningProgress, stakedBalance, approvedAmmount, LPBalance, honeyBalance } from '../dataStore.js';
 
     // Loaders
     let stakeLoading = false;
@@ -15,33 +16,37 @@
     let approvalLoading = false;
     let claimLoading = false;
 
-    const getSelectedAccountPagedReferralsFromName = async (val) => {
-
+    const getSelectedAccountPagedReferralsFromName = async () => {
         let contract = new $web3.eth.Contract(abi, address);
-		let allNames = await contract.methods.getPagedReferralsFromName($accountName, "0", "10").call().then(function(res) {
-			return res;
-		});
+        let name = $accountName;
+        return contract.methods.getPagedReferralsFromName(name, 0, 10).call().then(function(res) {
+            return res;
+        });
+
+    }
+
+    const getReferral = async (val) => {
+        
+        let { values , newCursor } = await getSelectedAccountPagedReferralsFromName();
 
         let allReferrals = [];
+        let contract = new $web3.eth.Contract(abi, address);
+        for (let i = 0; i < values.length; i++) {
 
-        for (let i = 0; i < allNames.length; i++) {
-
-            let address = await contract.methods.getAddressFromName(allNames[i]).call().then(function(res) {
+            let address = await contract.methods.getAddressFromName(values[i]).call().then(function(res) {
                 return res;
             });
-            let isMining = await contract.methods.getActiveFromName(allNames[i]).call().then(function(res) {
+            let isMining = await contract.methods.getActiveFromName(values[i]).call().then(function(res) {
                 return res;
             });
             let a = {
-                name: allNames[i],
+                name: values[i],
                 address,
                 isMining
             }
             allReferrals.push(a);
         }
-        console.log($accountName);
-        console.log(allNames);
-        console.log(allReferrals);
+        console.log("All refurals", allReferrals);
         return allReferrals;
 
     }
@@ -69,10 +74,24 @@
             from: $selectedAccount,
             gasPrice: $web3.utils.toHex($web3.utils.toWei('1', 'gwei')),
         })
-        .then( (receipt) => {
-            console.log(receipt);
+        .on('confirmation', function(confirmationNumber, receipt){
+            if(confirmationNumber == 1){
+                toast.push('Approval confirmed')
+            }
+        })
+        .on('error', function(error, receipt) {
+            if(error.code == 4001){
+                toast.push('User stopped transaction 😢', {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastProgressBackground': '#C53030'
+                    }
+                })
+            }
+            approvalLoading = false;
         });
         approvalLoading = false;
+        
     }
 
     const sendStakeRequest = async () => {
@@ -104,11 +123,14 @@
     }
 
 </script>
-
 <div class="flex flex-col justify-center items-center">
     <ProgressRing radius={100} honeyBalance={$honeyBalance} progress={$miningProgress} stroke={8} />
-    <h2 class="my-2 mb-3"><i class="far fa-clock"></i> 14:44:51</h2>
-    <Button on:click={sendSelectedAccountClaim} loading={claimLoading}>Start Mining</Button>
+    {#if Number($lastClaimTime) + Number($timeBetweenClaim) < Number($currentBlockNumber)}
+        <h2 class="my-2 mb-3"><i class="far fa-clock"></i> Mining Finished</h2>
+        {:else}
+        <h2 class="my-2 mb-3"><i class="far fa-clock"></i> {(Number($lastClaimTime) + Number($timeBetweenClaim)) - $currentBlockNumber} Blocks Remaining</h2>
+    {/if}
+    <Button on:click={sendSelectedAccountClaim} loading={claimLoading} disabled={$miningProgress != 100}>Start Mining</Button>
 </div>
 
 <div class="border-2 w-72 md:w-auto border-black mt-6 p-3 rounded space-y-1 md:space-y-1">
@@ -136,13 +158,15 @@
 <h2 class="mt-6 font-bold text-xl leading-none">Team</h2>
 <h2 class="text-xs">1 x 25% x (0.4 HNY/hr) = 0.10 HNY/hr</h2>
 <div class="team mt-3 grid grid-cols-2 gap-7 sm:gap-5 sm:grid-cols-3">
-    {#await getSelectedAccountPagedReferralsFromName()}
-        <p>...waiting</p>
-    {:then arr}
-        {#each arr as { name, address, isMining }, i}
-            <TeamMember name={name} address={address} mining={isMining} />
-        {/each}
-    {:catch error}
-        <p style="color: red">{error.message}</p>
-    {/await}
+    {#if $accountName != 0}
+        {#await getReferral()}
+            <p>...waiting</p>
+        {:then arr}
+            {#each arr as { name, address, isMining }, i}
+                <TeamMember name={name} address={address} mining={isMining} />
+            {/each}
+        {:catch error}
+            <p style="color: red">{error.message}</p>
+        {/await}
+    {/if}
 </div>

@@ -51,6 +51,22 @@
 <form on:submit|preventDefault={sendRegisterTransaction} class="flex flex-col justify-center items-center">
     <div class="flex flex-col space-y-2 p-2 mb-1">
         <div class="relative">
+            <input bind:value={registerReferalCode} on:input={setReferralCodeExsists} required minLength="3" maxLength="18" class="rounded border w-56 shadow text-yellow-400 placeholder-yellow-300 border-black  px-4 py-1 text-lg" type="text" placeholder="Referral Code">
+            {#if !referralCodeExsists && registerReferalCode}
+                <div class="absolute top-1.5 -right-8">
+                    <div transition:fade class="flex items-center justify-center rounded-full bg-red-100 mx-0 h-7 w-7">
+                        <i class="fas fa-times text-red-700"></i>
+                    </div>
+                </div>
+                {:else if registerReferalCode}
+                <div class="absolute top-1.5 -right-8">
+                    <div transition:fade class="flex items-center justify-center rounded-full bg-green-100 mx-0 h-7 w-7">
+                        <i class="fas fa-check text-green-500 text-sm"></i>
+                    </div>
+                </div>
+            {/if}
+        </div>
+        <div class="relative">
             {#if referralCodeExsists }
                 <input transition:slide bind:value={registerUsername} on:input={setReferralUsernameExsists} required minLength="3" name="username" maxLength="18" class="rounded border w-56 shadow border-black px-4 py-1 text-lg" type="text" placeholder="Username">
                 {#if !referralUsernameExsists && registerUsername}
@@ -69,23 +85,6 @@
                         </div>
                     </div>
                 {/if}
-            {/if}
-        </div>
-        
-        <div class="relative">
-            <input bind:value={registerReferalCode} on:input={setReferralCodeExsists} required minLength="3" maxLength="18" class="rounded border w-56 shadow text-yellow-400 placeholder-yellow-300 border-black  px-4 py-1 text-lg" type="text" placeholder="Referral Code">
-            {#if !referralCodeExsists && registerReferalCode}
-                <div class="absolute top-1.5 -right-8">
-                    <div transition:fade class="flex items-center justify-center rounded-full bg-red-100 mx-0 h-7 w-7">
-                        <i class="fas fa-times text-red-700"></i>
-                    </div>
-                </div>
-                {:else if registerReferalCode}
-                <div class="absolute top-1.5 -right-8">
-                    <div transition:fade class="flex items-center justify-center rounded-full bg-green-100 mx-0 h-7 w-7">
-                        <i class="fas fa-check text-green-500 text-sm"></i>
-                    </div>
-                </div>
             {/if}
         </div>
     </div>

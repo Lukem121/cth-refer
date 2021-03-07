@@ -71,6 +71,7 @@ contract ReferUsers is Ownable {
     }
     
     function register(string memory name, string memory referrer) public payable {
+        require(bytes(name).length <= 12, "Registration Error: name is too long must be shorter than 13 characters");
         require(msg.value >= registrationCost, "Registration Error: Registration fee must be paid");
         require(!isAvailable(referrer), "Registration Error: Referrer does not exist");
         require(isAvailable(name), "Registration Error: Username not available");
@@ -136,7 +137,7 @@ contract ReferUsers is Ownable {
         uint256 tokenReward = baseReward + tokenBonus;
         
         // Payout tokens
-        IERC777(baseTokenContract).send(msg.sender, tokenReward, "");
+        IERC20(baseTokenContract).transfer(msg.sender, 10);
     }
     
     function getTokenBonus(uint256 userStake, uint256 numberOfReferrals, uint256 teamStake) public view returns(uint256) {
@@ -149,10 +150,14 @@ contract ReferUsers is Ownable {
     }
 
     // Luke added this!
-    function getMiningProgressFromName(string memory name) public view returns(uint256) {
-        return (block.number - nameToUser[name].lastClaim) * (100 - 1) / (nameToUser[name].lastClaim + timeBetweenClaims - block.number) + 1;
+    function getMiningProgressFromName(string memory name) public view returns(uint256 lastClaim, uint256 timeBetween, uint256 currentBlock) {
+        lastClaim = nameToUser[name].lastClaim;
+        timeBetween = timeBetweenClaims;
+        currentBlock = block.number;
+        return (lastClaim, timeBetween, currentBlock);
     }
-    function getMiningProgressFromAddress(address id) public view returns(uint256) {
+    
+    function getMiningProgressFromAddress(address id) public view returns(uint256 lastClaim, uint256 timeBetween, uint256 currentBlock) {
         string memory name = getNameFromAddress(id);
         return getMiningProgressFromName(name);
     }
@@ -247,8 +252,25 @@ contract ReferUsers is Ownable {
         liquidityTokenContract = tknContract;
     }
     
-    function compareStrings(string memory a, string memory b) public view returns (bool) {
+    function compareStrings(string memory a, string memory b) public pure returns (bool) {
+        a = lower(a);
+        b = lower(b);
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
+    }
+    
+    function lower(string memory _base) internal pure returns (string memory) {
+        bytes memory _baseBytes = bytes(_base);
+        for (uint i = 0; i < _baseBytes.length; i++) {
+            _baseBytes[i] = _lower(_baseBytes[i]);
+        }
+        return string(_baseBytes);
+    }
+    
+    function _lower(bytes1 _b1) private pure returns (bytes1) {
+        if (_b1 >= 0x41 && _b1 <= 0x5A) {
+            return bytes1(uint8(_b1) + 32);
+        }
+        return _b1;
     }
     
 }

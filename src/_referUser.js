@@ -1,4 +1,4 @@
-export let address = "0xb63c36Eebc84133673Eb7410d90823c835B0538d";
+export let address = "0x59434DFaFd4C1034153b80fb0736F7A0F986462b";
 export let abi = [
 	{
 		"inputs": [],
@@ -104,7 +104,7 @@ export let abi = [
 				"type": "bool"
 			}
 		],
-		"stateMutability": "view",
+		"stateMutability": "pure",
 		"type": "function"
 	},
 	{
@@ -271,7 +271,17 @@ export let abi = [
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "lastClaim",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timeBetween",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "currentBlock",
 				"type": "uint256"
 			}
 		],
@@ -290,7 +300,17 @@ export let abi = [
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "lastClaim",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timeBetween",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "currentBlock",
 				"type": "uint256"
 			}
 		],
