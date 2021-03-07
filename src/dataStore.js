@@ -5,3 +5,4 @@ export const honeyBalance = writable(0);
 export const stakedBalance = writable(0);
 export const LPBalance = writable(0);
 export const miningProgress = writable(0);
+export const accountName = writable(0);

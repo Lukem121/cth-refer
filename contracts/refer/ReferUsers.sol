@@ -167,7 +167,7 @@ contract ReferUsers is Ownable {
         return getAllReferralsFromName(name);
     }
     
-    function getReferralsFromName(string memory name, uint256 cursor, uint256 resultsPerPage) public view returns(string[] memory values, uint256 newCursor) {
+    function getPagedReferralsFromName(string memory name, uint256 cursor, uint256 resultsPerPage) public view returns(string[] memory values, uint256 newCursor) {
         uint256 length = resultsPerPage;
         string[] memory referrals = getAllReferralsFromName(name);
         

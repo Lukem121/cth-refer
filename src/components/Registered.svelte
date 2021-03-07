@@ -7,13 +7,44 @@
 	import { abi as lpAbi, address as lpAddress } from '../_liquidProvider.js';
 	import { abi as honeyAbi, address as honeyAddress } from '../_honeyToken.js';
 
-	import { miningProgress, stakedBalance, approvedAmmount, LPBalance, honeyBalance } from '../dataStore.js';
+	import { accountName, miningProgress, stakedBalance, approvedAmmount, LPBalance, honeyBalance } from '../dataStore.js';
 
     // Loaders
     let stakeLoading = false;
     let withdrawLoading = false;
     let approvalLoading = false;
     let claimLoading = false;
+
+    const getSelectedAccountPagedReferralsFromName = async (val) => {
+
+        let contract = new $web3.eth.Contract(abi, address);
+		let allNames = await contract.methods.getPagedReferralsFromName($accountName, "0", "10").call().then(function(res) {
+			return res;
+		});
+
+        let allReferrals = [];
+
+        for (let i = 0; i < allNames.length; i++) {
+
+            let address = await contract.methods.getAddressFromName(allNames[i]).call().then(function(res) {
+                return res;
+            });
+            let isMining = await contract.methods.getActiveFromName(allNames[i]).call().then(function(res) {
+                return res;
+            });
+            let a = {
+                name: allNames[i],
+                address,
+                isMining
+            }
+            allReferrals.push(a);
+        }
+        console.log($accountName);
+        console.log(allNames);
+        console.log(allReferrals);
+        return allReferrals;
+
+    }
 
     const sendSelectedAccountClaim = async () => {
         claimLoading = true;
@@ -105,14 +136,13 @@
 <h2 class="mt-6 font-bold text-xl leading-none">Team</h2>
 <h2 class="text-xs">1 x 25% x (0.4 HNY/hr) = 0.10 HNY/hr</h2>
 <div class="team mt-3 grid grid-cols-2 gap-7 sm:gap-5 sm:grid-cols-3">
-    <TeamMember />
-    <TeamMember />
-    <TeamMember mining={false} />
-    <TeamMember mining={false} />
-    <TeamMember />
-    <TeamMember />
-    <TeamMember mining={false} />
-    <TeamMember />
-    <TeamMember />
-    <TeamMember />
+    {#await getSelectedAccountPagedReferralsFromName()}
+        <p>...waiting</p>
+    {:then arr}
+        {#each arr as { name, address, isMining }, i}
+            <TeamMember name={name} address={address} mining={isMining} />
+        {/each}
+    {:catch error}
+        <p style="color: red">{error.message}</p>
+    {/await}
 </div>

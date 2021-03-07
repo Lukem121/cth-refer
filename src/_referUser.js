@@ -1,4 +1,4 @@
-export let address = "0xd273c769E96f35c373cA3D1473A6b7B8aa3C3cCe";
+export let address = "0xb63c36Eebc84133673Eb7410d90823c835B0538d";
 export let abi = [
 	{
 		"inputs": [],
@@ -191,6 +191,44 @@ export let abi = [
 				"type": "address"
 			}
 		],
+		"name": "getAllReferralsFromAddress",
+		"outputs": [
+			{
+				"internalType": "string[]",
+				"name": "",
+				"type": "string[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "getAllReferralsFromName",
+		"outputs": [
+			{
+				"internalType": "string[]",
+				"name": "",
+				"type": "string[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "id",
+				"type": "address"
+			}
+		],
 		"name": "getLastClaimFromAddress",
 		"outputs": [
 			{
@@ -287,7 +325,7 @@ export let abi = [
 			},
 			{
 				"internalType": "uint256",
-				"name": "page",
+				"name": "cursor",
 				"type": "uint256"
 			},
 			{
@@ -296,11 +334,16 @@ export let abi = [
 				"type": "uint256"
 			}
 		],
-		"name": "getReferralsFromName",
+		"name": "getPagedReferralsFromName",
 		"outputs": [
 			{
+				"internalType": "string[]",
+				"name": "values",
+				"type": "string[]"
+			},
+			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "newCursor",
 				"type": "uint256"
 			}
 		],

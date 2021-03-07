@@ -190,6 +190,44 @@
         "type": "address"
       }
     ],
+    "name": "getAllReferralsFromAddress",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "getAllReferralsFromName",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "id",
+        "type": "address"
+      }
+    ],
     "name": "getLastClaimFromAddress",
     "outputs": [
       {
@@ -286,7 +324,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "page",
+        "name": "cursor",
         "type": "uint256"
       },
       {
@@ -295,11 +333,16 @@
         "type": "uint256"
       }
     ],
-    "name": "getReferralsFromName",
+    "name": "getPagedReferralsFromName",
     "outputs": [
       {
+        "internalType": "string[]",
+        "name": "values",
+        "type": "string[]"
+      },
+      {
         "internalType": "uint256",
-        "name": "",
+        "name": "newCursor",
         "type": "uint256"
       }
     ],

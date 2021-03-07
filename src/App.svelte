@@ -10,7 +10,7 @@
 	import { abi, address } from './_referUser.js';
 	import { abi as lpAbi, address as lpAddress } from './_liquidProvider.js';
 	import { abi as honeyAbi, address as honeyAddress } from './_honeyToken.js';
-	import { miningProgress, LPBalance, honeyBalance, registerd, approvedAmmount, stakedBalance } from './dataStore.js';
+	import { accountName, miningProgress, LPBalance, honeyBalance, registerd, approvedAmmount, stakedBalance } from './dataStore.js';
 
 
 
@@ -84,6 +84,13 @@
 			return res;
 		});
 	}
+
+	const getNameFromAddress = async(e) => {
+		let contract = new $web3.eth.Contract(abi, address);
+		return contract.methods.getNameFromAddress($selectedAccount).call().then(function(res) {
+			return res;
+		});
+	}
 	const updateStores = async () => {
 		registerd.set(await getIsRegistered($selectedAccount) !== "");
 		
@@ -91,8 +98,15 @@
 		honeyBalance.set($web3.utils.fromWei(hnybal.toString()));
 		
 		if($registerd){
+
 			let approvalAmount = await getSelectedAccountApproval();
 			approvedAmmount.set($web3.utils.fromWei(approvalAmount.toString()));
+
+			let lpbal = await getSelectedAccountLPBalance();
+			LPBalance.set($web3.utils.fromWei(lpbal.toString()));
+
+			let acntName = await getNameFromAddress();
+			accountName.set(acntName.toString());
 
 			if($approvedAmmount > 0){
 				
@@ -102,8 +116,6 @@
 				let mineProgress = await getSelectedAccountMiningProgress();
 				miningProgress.set(mineProgress.toString());
 				
-				let lpbal = await getSelectedAccountLPBalance();
-				LPBalance.set($web3.utils.fromWei(lpbal.toString()));
 			}
 		}
 			
