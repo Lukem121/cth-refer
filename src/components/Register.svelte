@@ -69,11 +69,27 @@
     }
 </script>
 
-<form on:submit|preventDefault={sendRegisterTransaction} class="flex flex-col justify-center items-center">
-    <div class="flex flex-col space-y-2 p-2 mb-1">
-        <div class="relative">
-            <input bind:value={registerReferalCode} on:input={setReferralCodeExsists} required minLength="3" maxLength="18" class="rounded border w-56 shadow text-yellow-400 placeholder-yellow-300 border-black  px-4 py-1 text-lg" type="text" placeholder="Referral Code">
-            {#if !referralCodeExsists && registerReferalCode}
+<div class="flex flex-col mt-32">
+
+    <div class="bg-harvest-black p-2 my-6">
+        <div class="border-8 p-4 w-96 border-harvest-green bg-harvest-black flex flex-col justify-center items-center">
+            <div class="mb-1">
+                <p class="text-xl text-white">Welcome to Harvest!</p>
+                <ul class="text-white space-y-1">
+                    <li>To join Harvest you need to find a team! You can find referral codes on the Discord.</li>
+                    <li>To earn rewards for mining you must first add liquidity to the pool.</li>
+                    <li>Your rewards will be based on the amount of LP tokens you stake and by your total referrals.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    
+    <form on:submit|preventDefault={sendRegisterTransaction} class="flex flex-col justify-center items-center">
+        <div class="flex flex-col space-y-2 p-2 mb-1">
+            <div class="relative">
+                <input bind:value={registerReferalCode} on:input={setReferralCodeExsists} required minLength="3" maxLength="18" class="rounded border w-56 shadow text-yellow-400 placeholder-yellow-300 border-black  px-4 py-1 text-lg" type="text" placeholder="Referral Code">
+                {#if !referralCodeExsists && registerReferalCode}
                 <div class="absolute top-1.5 -right-8">
                     <div transition:fade class="flex items-center justify-center rounded-full bg-red-100 mx-0 h-7 w-7">
                         <i class="fas fa-times text-red-700"></i>
@@ -85,29 +101,30 @@
                         <i class="fas fa-check text-green-500 text-sm"></i>
                     </div>
                 </div>
-            {/if}
-        </div>
-        <div class="relative">
-            {#if referralCodeExsists }
+                {/if}
+            </div>
+            <div class="relative">
+                {#if referralCodeExsists }
                 <input transition:slide bind:value={registerUsername} on:input={setReferralUsernameExsists} required minLength="3" name="username" maxLength="18" class="rounded border w-56 shadow border-black px-4 py-1 text-lg" type="text" placeholder="Username">
                 {#if !referralUsernameExsists && registerUsername}
-                    <div class="absolute top-1.5 -right-8">
-                        <div transition:fade class="flex items-center justify-center rounded-full bg-red-100 mx-0 h-7 w-7">
-                            <i class="fas fa-times text-red-700"></i>
-                        </div>
+                <div class="absolute top-1.5 -right-8">
+                    <div transition:fade class="flex items-center justify-center rounded-full bg-red-100 mx-0 h-7 w-7">
+                        <i class="fas fa-times text-red-700"></i>
                     </div>
-                    <div class="absolute top-2 -right-32">
-                        <span class="pl-2"> Not Available</span>
+                </div>
+                <div class="absolute top-2 -right-32">
+                    <span class="pl-2"> Not Available</span>
+                </div>
+                {:else if registerUsername}
+                <div class="absolute top-1.5 -right-8">
+                    <div transition:fade class="flex items-center justify-center rounded-full bg-green-100 mx-0 h-7 w-7">
+                        <i class="fas fa-check text-green-500 text-sm"></i>
                     </div>
-                    {:else if registerUsername}
-                    <div class="absolute top-1.5 -right-8">
-                        <div transition:fade class="flex items-center justify-center rounded-full bg-green-100 mx-0 h-7 w-7">
-                            <i class="fas fa-check text-green-500 text-sm"></i>
-                        </div>
-                    </div>
+                </div>
                 {/if}
-            {/if}
+                {/if}
+            </div>
         </div>
-    </div>
-    <Button on:click loading={registerLoading} disabled={!(registerReferalCode && (referralUsernameExsists && registerUsername))} >Register</Button>
-</form>
+        <Button on:click loading={registerLoading} disabled={!(registerReferalCode && (referralUsernameExsists && registerUsername))} >Register</Button>
+    </form>
+</div>

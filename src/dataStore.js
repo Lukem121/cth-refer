@@ -9,3 +9,4 @@ export const accountName = writable(0);
 export const lastClaimTime = writable(0);
 export const timeBetweenClaim = writable(0);
 export const currentBlockNumber = writable(0);
+export const showFAQ = writable(1);

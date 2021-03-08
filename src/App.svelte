@@ -1,6 +1,7 @@
 <script>
 	import Tailwindcss from './Tailwindcss.svelte';
 	import Button from './components/Button.svelte';
+	import FAQ from './components/FAQ.svelte';
 	import WrongNetwork from './components/WrongNetwork.svelte';
     import { ethStore, web3, selectedAccount, connected } from 'svelte-web3';
 	import Nav from './components/Nav.svelte';
@@ -10,7 +11,7 @@
 	import { abi, address } from './_referUser.js';
 	import { abi as lpAbi, address as lpAddress } from './_liquidProvider.js';
 	import { abi as honeyAbi, address as honeyAddress } from './_honeyToken.js';
-	import { lastClaimTime, timeBetweenClaim, currentBlockNumber, accountName, miningProgress, LPBalance, honeyBalance, registerd, approvedAmmount, stakedBalance } from './dataStore.js';
+	import { showFAQ, lastClaimTime, timeBetweenClaim, currentBlockNumber, accountName, miningProgress, LPBalance, honeyBalance, registerd, approvedAmmount, stakedBalance } from './dataStore.js';
 
 	// Checks
 	let wrongNetwork = false;
@@ -151,6 +152,9 @@
 </svelte:head>
 <SvelteToast {options} />
 <Tailwindcss />
+{#if $showFAQ}
+	<FAQ />
+{/if}
 {#if wrongNetwork}
 	<WrongNetwork />
 {/if}
