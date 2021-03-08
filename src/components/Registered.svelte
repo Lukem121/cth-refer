@@ -22,7 +22,6 @@
         return contract.methods.getPagedReferralsFromName(name, 0, 10).call().then(function(res) {
             return res;
         });
-
     }
 
     const getReferral = async (val) => {
@@ -59,10 +58,29 @@
             from: $selectedAccount,
             gasPrice: $web3.utils.toHex($web3.utils.toWei('1', 'gwei')),
         })
-        .then( (receipt) => {
-            console.log(receipt);
+        .on('confirmation', function(confirmationNumber, receipt){
+            if(confirmationNumber == 1){
+                toast.push('Mining started! 🥳')
+            }
+        })
+        .on('error', function(error, receipt) {
+            if(error.code == 4001){
+                toast.push('User rejected transaction 😢', {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastProgressBackground': '#C53030'
+                    }
+                })
+            }else {
+                toast.push('Somthing went wrong 😢', {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastProgressBackground': '#C53030'
+                    }
+                })
+            }
+            claimLoading = false;
         });
-        
         claimLoading = false;
     }
 
@@ -81,7 +99,7 @@
         })
         .on('error', function(error, receipt) {
             if(error.code == 4001){
-                toast.push('User stopped transaction 😢', {
+                toast.push('User rejected transaction 😢', {
                     theme: {
                         '--toastBackground': '#F56565',
                         '--toastProgressBackground': '#C53030'
@@ -102,8 +120,28 @@
             from: $selectedAccount,
             gasPrice: $web3.utils.toHex($web3.utils.toWei('1', 'gwei')),
         })
-        .then( (receipt) => {
-            console.log(receipt);
+        .on('confirmation', function(confirmationNumber, receipt){
+            if(confirmationNumber == 1){
+                toast.push('LP Tokens Staked! 💰')
+            }
+        })
+        .on('error', function(error, receipt) {
+            if(error.code == 4001){
+                toast.push('User rejected transaction 😢', {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastProgressBackground': '#C53030'
+                    }
+                })
+            }else {
+                toast.push('Somthing went wrong 😢', {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastProgressBackground': '#C53030'
+                    }
+                })
+            }
+            stakeLoading = false;
         });
         stakeLoading = false;
     }
@@ -116,8 +154,28 @@
             from: $selectedAccount,
             gasPrice: $web3.utils.toHex($web3.utils.toWei('1', 'gwei')),
         })
-        .then( (receipt) => {
-            console.log(receipt);
+        .on('confirmation', function(confirmationNumber, receipt){
+            if(confirmationNumber == 1){
+                toast.push('Withdraw sucsessful! 💰')
+            }
+        })
+        .on('error', function(error, receipt) {
+            if(error.code == 4001){
+                toast.push('User rejected transaction 😢', {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastProgressBackground': '#C53030'
+                    }
+                })
+            }else {
+                toast.push('Somthing went wrong 😢', {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastProgressBackground': '#C53030'
+                    }
+                })
+            }
+            withdrawLoading = false;
         });
         withdrawLoading = false;
     }
@@ -155,8 +213,9 @@
         </a>
     </div>
 </div>
-<h2 class="mt-6 font-bold text-xl leading-none">Team</h2>
+<h2 class="mt-6 mb-1 font-bold text-xl leading-none">Team - <span class="text-yellow-400">{$accountName}</span></h2>
 <h2 class="text-xs">1 x 25% x (0.4 HNY/hr) = 0.10 HNY/hr</h2>
+<h2 class="text-xs">Invite people to join Honey and recive a sweet <br>bonus multiplier when they stake liquididty!</h2>
 <div class="team mt-3 grid grid-cols-2 gap-7 sm:gap-5 sm:grid-cols-3">
     {#if $accountName != 0}
         {#await getReferral()}

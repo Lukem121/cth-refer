@@ -1,6 +1,7 @@
 <script>
 	import Button from './Button.svelte';
 	import { slide, fade } from 'svelte/transition';
+    import { toast } from '@zerodevx/svelte-toast'
     import { ethStore, chainId, web3, selectedAccount, connected } from 'svelte-web3';
 	import { abi, address } from '../_referUser.js';
 
@@ -41,8 +42,28 @@
             gasPrice: $web3.utils.toHex($web3.utils.toWei('1', 'gwei')),
             value: $web3.utils.toWei((joinHoneyPrice).toString(), 'ether')
         })
-        .then( (receipt) => {
-            console.log(receipt);
+        .on('confirmation', function(confirmationNumber, receipt){
+            if(confirmationNumber == 1){
+                toast.push('Welcome to Honey! 🥳')
+            }
+        })
+        .on('error', function(error, receipt) {
+            if(error.code == 4001){
+                toast.push('User rejected transaction 😢', {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastProgressBackground': '#C53030'
+                    }
+                })
+            }else {
+                toast.push('Somthing went wrong 😢', {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastProgressBackground': '#C53030'
+                    }
+                })
+            }
+            registerLoading = false;
         });
 		registerLoading = false;
     }

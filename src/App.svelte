@@ -3,7 +3,6 @@
 	import Button from './components/Button.svelte';
 	import WrongNetwork from './components/WrongNetwork.svelte';
     import { ethStore, web3, selectedAccount, connected } from 'svelte-web3';
-	import DEVTOOLS from './components/DEVTOOLS.svelte';
 	import Nav from './components/Nav.svelte';
 	import Register from './components/Register.svelte';
 	import Registered from './components/Registered.svelte';
@@ -12,11 +11,6 @@
 	import { abi as lpAbi, address as lpAddress } from './_liquidProvider.js';
 	import { abi as honeyAbi, address as honeyAddress } from './_honeyToken.js';
 	import { lastClaimTime, timeBetweenClaim, currentBlockNumber, accountName, miningProgress, LPBalance, honeyBalance, registerd, approvedAmmount, stakedBalance } from './dataStore.js';
-
-
-
-	// Devtools
-	let progress;
 
 	// Checks
 	let wrongNetwork = false;
@@ -153,7 +147,6 @@
 </svelte:head>
 <SvelteToast {options} />
 <Tailwindcss />
-<DEVTOOLS bind:registerd={$registerd} bind:progress={progress} />
 {#if wrongNetwork}
 	<WrongNetwork />
 {/if}
@@ -170,7 +163,7 @@
 	<div class="mt-5">
 		{#if $connected}
 				{#if $registerd}
-					<Registered bind:progress={progress} />
+					<Registered/>
 					{:else}
 					<Register />
 				{/if}
