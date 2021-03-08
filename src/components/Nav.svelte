@@ -3,12 +3,12 @@
 	import UserBalance from './UserBalance.svelte';
 	import { address } from '../_honeyToken.js';
 </script>
-<div class="flex justify-center items-center mx-32 md:justify-between">
-	<img src="HarvestLogo.svg" alt="">
+<div class="flex justify-center items-center md:justify-between">
+	<img class="w-64" src="HarvestLogo.svg" alt="">
 	<div class="flex">
 		<a href="https://cheapswap.io/#/swap?inputCurrency=ETH&outputCurrency={address}" >
-			<div class="flex justify-center items-center cursor-pointer border-2 border-black my-6 mr-1 md:mr-6 px-3 py-1 rounded-lg space-x-2 font-medium">
-				<p>Get Honey!</p>
+			<div class="harvest-balance text-white leading-none bg-harvest-blue mr-3 py-2 px-4 rounded-2xl">
+				<p class="font-bold">BUY HRVST</p>
 			</div>
 		</a>
 		{#if $connected}

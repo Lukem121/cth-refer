@@ -25,20 +25,26 @@
 
 <svg height="{radius * 2}" width="{radius * 2}">
     <circle
+        fill="#1A1A1D"
+        r="{normalizedRadius + 15}"
+        cx="{radius}"
+        cy="{radius}"
+    />
+    <circle
         style="transition: stroke-dashoffset {transSpeed}s;"
-        stroke="black"
+        stroke="#50FA7B"
         stroke-dasharray="{circumference} {circumference}"
         stroke-dashoffset="{ sdo }"
         stroke-width="{stroke}"
-        fill="transparent"
+        fill="#1A1A1D"
         r="{normalizedRadius}"
         cx="{radius}"
         cy="{radius}"
     />
     {#if honeyBalance < 1}
-        <text x="50%" y="54%" text-anchor="middle" class="font-bold" fill="black">{parseFloat(honeyBalance).toFixed(2)} HNY</text>
+        <text x="50%" y="54%" text-anchor="middle" class="font-bold" fill="white">{parseFloat(honeyBalance).toFixed(2)} HRVST</text>
         {:else}
-        <text x="50%" y="54%" text-anchor="middle" class="font-bold" fill="black">{honeyBalance} HNY</text>
+        <text x="50%" y="54%" text-anchor="middle" class="font-bold" fill="white">{honeyBalance} HRVST</text>
     {/if}
 </svg>
 

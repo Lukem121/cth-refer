@@ -141,7 +141,11 @@
 <svelte:head>
 	<style>
 		body {
-			height: 70vh;
+			height: 100%;
+			background-image: url("BGBUBBLES.svg");
+			background-repeat: no-repeat;
+			background-position: center;			
+			background-size: cover;
 		}
 	</style>
 </svelte:head>
@@ -151,30 +155,24 @@
 	<WrongNetwork />
 {/if}
 
-<Nav />
-<main class="flex flex-col md:mt-16 justify-center items-center h-full">
-	<!-- Logo -->
-	<div class="flex justify-center ">
-		<div class="pl-9 flex flex-nowrap items-start">
-			<h1 class="text-8xl font-bold leading-none">Honey</h1>
-			<img class="w-12" src="./logo.svg" alt="logo">
-		</div>
-	</div>
-	<div class="mt-5">
-		{#if $connected}
-				{#if $registerd}
-					<Registered/>
-					{:else}
-					<Register />
-				{/if}
+<main class="">
+	<nav class="mt-16 mx-60">
+		<Nav />
+	</nav>
+	<div class="flex flex-col mt-5 justify-center items-center">
+		<div class="mt-5">
+			{#if $connected}
+			{#if $registerd}
+			<Registered/>
+			{:else}
+			<Register />
+			{/if}
 			{:else}
 			<Button on:click={enableBrowser} loading={connectWalletLoading}>Connect Wallet</Button>
-		{/if}
+			{/if}
+		</div>
 	</div>
 </main>
 
 <style>
-	h1 {
-		font-family: 'PT Sans', sans-serif;
-	}
 </style>

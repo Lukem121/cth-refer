@@ -13,9 +13,17 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Roboto', 'sans-serif'],
+      },
       colors:{
-        'luke-green': "#50FA7B",
-        'luke-black': "#1A1A1D",
+        'harvest-blue-dark': "#008F9E",
+        'harvest-blue': "#00B5A6",
+        'harvest-green-dark': "#43DB40",
+        'harvest-green': "#50FA7B",
+        'harvest-green-light': "#70FF98",
+        'harvest-black': "#1A1A1D",
+        'harvest-yello': "#F1C517",
       },
     },
   },
