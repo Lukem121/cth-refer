@@ -133,15 +133,16 @@ contract ReferUsers is Ownable {
         uint256 numberOfReferrals = nameToUser[name].referrals.length;
         uint256 teamStake = nameToUser[name].totalTeamStake;
         
-        uint256 tokenBonus = getTokenBonus(userStake, numberOfReferrals, teamStake);
-        uint256 tokenReward = baseReward + tokenBonus;
+        uint256 tokenBonus = getTokenBonus(userStake, teamStake);
         
         // Payout tokens
-        IERC20(baseTokenContract).transfer(msg.sender, 10);
+        //IERC20(baseTokenContract).transfer(msg.sender, 10);
     }
     
-    function getTokenBonus(uint256 userStake, uint256 numberOfReferrals, uint256 teamStake) public view returns(uint256) {
-        uint256 tokenBonus = numberOfReferrals * ((baseReward / 4) / 3);
+    function getTokenBonus(uint256 userStake, uint256 teamStake) public pure returns(uint256) {
+        uint256 teamStakeBonus = preciseDivision(teamStake, (10 ** 18), 18);
+        uint256 tokenBonus = preciseDivision(userStake + teamStakeBonus, (24 ** 18), 18);
+        
         return tokenBonus;
     }
     
@@ -271,6 +272,20 @@ contract ReferUsers is Ownable {
             return bytes1(uint8(_b1) + 32);
         }
         return _b1;
+    }
+    
+    function preciseDivision(uint256 a, uint256 b, uint256 precision) public pure returns (uint256) {
+        return a * (10 ** precision) / b;
+    }
+    
+    function floor(uint256 a, uint256 precision) public pure returns (uint256) {
+        uint256 m = 10 ** precision;
+        return ((a - 1) / m) * m;
+    }
+    
+    function ceil(uint256 a, uint256 precision) public pure returns (uint256) {
+        uint256 m = 10 ** precision;
+        return ((a + m - 1) / m) * m;
     }
     
 }
