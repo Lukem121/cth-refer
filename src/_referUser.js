@@ -1,4 +1,4 @@
-export let address = "0x3cdEa36835195A8277A030e6261C699626Ad6e42";
+export let address = "0x99fF1B0Fc4256E90D604C5f79ed8d7a7cFa6d0E0";
 export let abi = [
 	{
 		"inputs": [],
