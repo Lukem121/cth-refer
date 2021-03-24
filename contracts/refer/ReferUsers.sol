@@ -127,30 +127,25 @@ contract ReferUsers is Ownable {
     function claim() public {
         string memory name = getNameFromAddress(msg.sender);
         uint256 lastClaim = nameToUser[name].lastClaim;
-        require(lastClaim >= timeBetweenClaims, "Claim Error: Reward not yet available");
+        require(lastClaim < block.number + timeBetweenClaims, "Claim Error: Reward not yet available");
         
         uint256 userStake = nameToUser[name].userStake;
-        uint256 numberOfReferrals = nameToUser[name].referrals.length;
         uint256 teamStake = nameToUser[name].totalTeamStake;
         
         uint256 tokenBonus = getTokenBonus(userStake, teamStake);
         
-        // Payout tokens
-        //IERC20(baseTokenContract).transfer(msg.sender, 10);
+        // mint tokens for user
+        IERC777(baseTokenContract).mint(msg.sender, tokenBonus);
     }
     
     function getTokenBonus(uint256 userStake, uint256 teamStake) public pure returns(uint256) {
-        uint256 teamStakeBonus = preciseDivision(teamStake, (10 ** 18), 18);
-        uint256 tokenBonus = preciseDivision(userStake + teamStakeBonus, (24 ** 18), 18);
-        
-        return tokenBonus;
-    }
-    
-    function getActiveTeamStake(string memory name) public view returns(uint256) {
-        
+        // calculate 10% of teamStake
+        uint256 teamStakeAmount = preciseDivision(teamStake, 10 * (10 ** 18), 18);
+        uint256 userStakeBonus = preciseDivision(userStake + teamStakeAmount, 2 * (10 ** 18), 18);
+
+        return userStakeBonus;
     }
 
-    // Luke added this!
     function getMiningProgressFromName(string memory name) public view returns(uint256 lastClaim, uint256 timeBetween, uint256 currentBlock) {
         lastClaim = nameToUser[name].lastClaim;
         timeBetween = timeBetweenClaims;
