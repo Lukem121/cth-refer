@@ -60,6 +60,8 @@ interface IERC777 {
      */
     function send(address recipient, uint256 amount, bytes calldata data) external;
 
+    function mint(address to, uint256 amount) external;
+
     /**
      * @dev Destroys `amount` tokens from the caller's account, reducing the
      * total supply.
